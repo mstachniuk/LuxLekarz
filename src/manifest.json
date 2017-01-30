@@ -1,0 +1,33 @@
+{
+  "manifest_version": 2,
+
+  "name": "LuxLekarz",
+  "description": "Wtyczka pomaga wyszukiwać dobrych lekarzy za pośrednictwem Portalu Pacjenta Luxmed.pl, łącząc znalezionych lekarzy z opiniami z serwisu ZnanyLekarz.pl.",
+  "version": "1.0",
+
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png",
+    "256": "icon256.png",
+    "512": "icon512.png"
+  },
+
+  "browser_action": {
+    "default_icon": "icon16.png",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["jquery-3.1.1.min.js", "doctor.js", "myscript.js"]
+    }
+  ],
+  "permissions": [
+    "activeTab",
+    "tabs",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "web_accessible_resources": ["star10.png", "star-gray10.png"]
+}
