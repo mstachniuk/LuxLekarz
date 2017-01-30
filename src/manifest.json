@@ -1,10 +1,11 @@
 {
   "manifest_version": 2,
 
-  "name": "LuxLekarz",
-  "description": "Wtyczka pomaga wyszukiwać dobrych lekarzy za pośrednictwem Portalu Pacjenta Luxmed.pl, łącząc znalezionych lekarzy z opiniami z serwisu ZnanyLekarz.pl.",
+  "name": "LuxLekarz - LuxMed + ZnanyLekarz",
+  "short_name": "LuxLekarz",
+  "description": "Wtyczka dodaje opinie o lekarzach na Portalu Pacjenta Luxmed.pl, bazując na opiniach z serwisu ZnanyLekarz.pl.",
   "version": "1.0",
-
+  "homepage_url": "https://github.com/mstachniuk/LuxLekarz",
   "icons": {
     "16": "icon16.png",
     "48": "icon48.png",
