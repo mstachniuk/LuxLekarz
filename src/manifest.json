@@ -4,7 +4,7 @@
   "name": "LuxLekarz - LuxMed + ZnanyLekarz",
   "short_name": "LuxLekarz",
   "description": "Wtyczka dodaje opinie o lekarzach na Portalu Pacjenta Luxmed.pl, bazując na opiniach z serwisu ZnanyLekarz.pl.",
-  "version": "1.0",
+  "version": "1.1",
   "homepage_url": "https://github.com/mstachniuk/LuxLekarz",
   "icons": {
     "16": "icon16.png",
@@ -30,5 +30,6 @@
     "http://*/*",
     "https://*/*"
   ],
-  "web_accessible_resources": ["star10.png", "star-gray10.png"]
+  "web_accessible_resources": ["star-gold-left-10.png", "star-gold-right-10.png", "star-gray-left-10.png",
+    "star-gray-right-10.png"]
 }

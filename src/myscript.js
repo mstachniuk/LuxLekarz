@@ -1,12 +1,27 @@
+function starImgGoldName(partNumber) {
+    if(partNumber % 2 === 0) {
+        return "star-gold-left-10.png";
+    }
+    return "star-gold-right-10.png"
+}
+
+function starImgGrayName(partNumber) {
+    if(partNumber % 2 === 0) {
+        return "star-gray-left-10.png";
+    }
+    return "star-gray-right-10.png"
+}
+
 function createStarScaleAsImgElements(numberOfStars) {
     var text = "";
-    for (var i = 0; i < numberOfStars; i++) {
-        text = text + '<img src="' + chrome.extension.getURL("star10.png") +
-            '" alt="star" width="10" height="10">';
+    var doubleNumberOfStarsInt = Math.ceil(numberOfStars * 2);
+    for (var i = 0; i < doubleNumberOfStarsInt; i++) {
+        text = text + '<img src="' + chrome.extension.getURL(starImgGoldName(i)) +
+            '" alt="star" width="5" height="10">';
     }
-    for (var j = numberOfStars; j < 5; j++) {
-        text = text + '<img src="' + chrome.extension.getURL("star-gray10.png") +
-            '" alt="star" width="10" height="10">';
+    for (var j = doubleNumberOfStarsInt; j < 10; j++) {
+        text = text + '<img src="' + chrome.extension.getURL(starImgGrayName(j)) +
+            '" alt="star" width="5" height="10">';
     }
     return text;
 }
@@ -19,7 +34,8 @@ function addNoDataInfo(doctor) {
             $(doctorNameDiv[i]).append("&nbsp;&nbsp;");
             var linkAndStars = '<a href="https://www.znanylekarz.pl/" target="_blank" '
                 + 'title="Brak strony o danym lekarzu w serwisie znanylekarz.pl Kliknij, aby przejść do tej strony '
-                + 'i spróbuj wyszukać lekarza ręcznie.">' + createStarScaleAsImgElements(0) + '</a>';
+                + 'i spróbuj wyszukać lekarza ręcznie."><span style="white-space: nowrap;">'
+                + createStarScaleAsImgElements(0) + '</span></a>';
             $(doctorNameDiv[i]).append(linkAndStars);
         }
     }
@@ -31,9 +47,10 @@ function addStarsToLuxPage(doctor, numberOfStars, url) {
     for (var i = 0; i < doctorNameDiv.length; i++) {
         if (doctorNameDiv[i].textContent.trim() === doctorName) {
             $(doctorNameDiv[i]).append("&nbsp;&nbsp;");
-            var linkAndStars = '<a href="' + url + '" target="_blank" ' +
-                'title="Przejdź do strony znanylekarz.pl, aby zobaczyć wszystkie opinie.">'
-                + createStarScaleAsImgElements(numberOfStars) + '</a>';
+            var linkAndStars = '<a href="' + url + '" target="_blank" '
+                + 'title="Przejdź do strony znanylekarz.pl, aby zobaczyć wszystkie opinie.">'
+                + '<span style="white-space: nowrap;">'
+                + createStarScaleAsImgElements(numberOfStars) + '</span></a>';
             $(doctorNameDiv[i]).append(linkAndStars);
         }
     }
@@ -43,12 +60,12 @@ function loadDoctorPage(url, doctor) {
     $.get(url).done(function (data) {
         var htmlPage = $('<div/>').html(data).contents();
         var numberOfStarsSpan = htmlPage.find("span.rating.big.pull-left");
-        console.log("Odczytujemy gwiazdki dla: " + getDoctorName(doctor));
         if (numberOfStarsSpan.length > 0) {
-            var numberOfStars = parseInt(numberOfStarsSpan[0].title);
-            console.log("Gwiazdki: " + numberOfStars);
+            var numberOfStars = parseFloat(numberOfStarsSpan[0].title);
+            console.log("Odczytano " + numberOfStars + " gwiazdki dla: " + getDoctorName(doctor));
             addStarsToLuxPage(doctor, numberOfStars, url);
         } else {
+            console.log("Nie znaleziono gwiazdek dla: " + getDoctorName(doctor));
             addStarsToLuxPage(doctor, 0, url);
         }
     });
@@ -66,6 +83,7 @@ function loadDoctor(doctor) {
         if (data.hits.length > 0) {
             loadDoctorPage(data.hits[0].url.replace("http://", "https://"), doctor);
         } else {
+            console.log("Nie znaleziono strony dla: " + getDoctorName(doctor));
             addNoDataInfo(doctor);
         }
     });
