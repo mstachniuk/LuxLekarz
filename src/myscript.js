@@ -56,21 +56,6 @@ function addStarsToLuxPage(doctor, numberOfStars, url) {
     }
 }
 
-function loadDoctorPage(url, doctor) {
-    $.get(url).done(function (data) {
-        var htmlPage = $('<div/>').html(data).contents();
-        var numberOfStarsSpan = htmlPage.find("span.rating.big.pull-left");
-        if (numberOfStarsSpan.length > 0) {
-            var numberOfStars = parseFloat(numberOfStarsSpan[0].title);
-            console.log("Odczytano " + numberOfStars + " gwiazdki dla: " + getDoctorName(doctor));
-            addStarsToLuxPage(doctor, numberOfStars, url);
-        } else {
-            console.log("Nie znaleziono gwiazdek dla: " + getDoctorName(doctor));
-            addStarsToLuxPage(doctor, 0, url);
-        }
-    });
-}
-
 function loadDoctor(doctor) {
     var arguments = {
         params: getSearchParamForDoctor(doctor),
@@ -81,7 +66,9 @@ function loadDoctor(doctor) {
         JSON.stringify(arguments));
     doctorResponse.done(function (data) {
         if (data.hits.length > 0) {
-            loadDoctorPage(data.hits[0].url.replace("http://", "https://"), doctor);
+            var numberOfStars = parseFloat(data.hits[0].stars);
+            console.log("Odczytano " + numberOfStars + " gwiazdki dla: " + getDoctorName(doctor));
+            addStarsToLuxPage(doctor, numberOfStars, data.hits[0].url.replace("http://", "https://"));
         } else {
             console.log("Nie znaleziono strony dla: " + getDoctorName(doctor));
             addNoDataInfo(doctor);
