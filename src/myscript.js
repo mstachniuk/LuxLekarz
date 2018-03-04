@@ -14,6 +14,9 @@ function starImgGrayName(partNumber) {
 
 function createStarScaleAsImgElements(numberOfStars) {
     var text = "";
+    if(isNaN(numberOfStars)) {
+        numberOfStars = 0;
+    }
     var doubleNumberOfStarsInt = Math.ceil(numberOfStars * 2);
     for (var i = 0; i < doubleNumberOfStarsInt; i++) {
         text = text + '<img src="' + chrome.extension.getURL(starImgGoldName(i)) +
@@ -82,7 +85,7 @@ function loadStars(doctors) {
 
 var currentUrl = window.location.toString();
 if (currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/Find") {
-    var doctorNames = $(".reserveTable > tbody > tr > td[colspan=3] > div:nth-child(1)");
+    var doctorNames = $(".reserveTable > tbody > tr > td[colspan=3]:nth-child(2) > div:nth-child(1)");
     var favour = $(".reserveTable > tbody > tr > td[colspan=3] > div:nth-child(2)");
     var doctors = new Set();
     for (var i = 0; i < doctorNames.length; i++) {
