@@ -84,7 +84,8 @@ function loadStars(doctors) {
 }
 
 var currentUrl = window.location.toString();
-if (currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/Find") {
+if (currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/Find"
+        || currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/SearchVisitsForChangeTerm") {
     var doctorNames = $(".reserveTable > tbody > tr > td[colspan=3]:nth-child(2) > div:nth-child(1)");
     var favour = $(".reserveTable > tbody > tr > td[colspan=3] > div:nth-child(2)");
     var doctors = new Set();
