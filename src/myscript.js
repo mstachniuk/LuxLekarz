@@ -44,8 +44,8 @@ function addNoDataInfo(doctor) {
     }
 }
 
-function addStarsToLuxPage(doctor, numberOfStars, url) {
-    var doctorNameDiv = $(".reserveTable > tbody > tr > td[colspan=3] > div:nth-child(1)");
+function addStarsToStartPageFutureTerms(doctor, numberOfStars, url) {
+    var doctorNameDiv = $("#userReservations > div:nth-child(3) > div > div.description.limit-width > h4");
     var doctorName = getDoctorName(doctor);
     for (var i = 0; i < doctorNameDiv.length; i++) {
         if (doctorNameDiv[i].textContent.trim() === doctorName) {
@@ -56,6 +56,54 @@ function addStarsToLuxPage(doctor, numberOfStars, url) {
                 + createStarScaleAsImgElements(numberOfStars) + '</span></a>';
             $(doctorNameDiv[i]).append(linkAndStars);
         }
+    }
+}
+
+function addStarsToStartPageExecutedTerms(doctor, numberOfStars, url) {
+    var doctorNameDiv = $("#userReservations > div.content > div.item > div.description:not(.limit-width) > h4");
+    var doctorName = getDoctorName(doctor);
+    for (var i = 0; i < doctorNameDiv.length; i++) {
+        if (doctorNameDiv[i].textContent.trim() === doctorName) {
+            $(doctorNameDiv[i]).append("&nbsp;&nbsp;");
+            var linkAndStars = '<a href="' + url + '" target="_blank" '
+                + 'title="Przejdź do strony znanylekarz.pl, aby zobaczyć wszystkie opinie.">'
+                + '<span style="white-space: nowrap;">'
+                + createStarScaleAsImgElements(numberOfStars) + '</span></a>';
+            $(doctorNameDiv[i]).append(linkAndStars);
+        }
+    }
+}
+
+function addStarsToLuxPage(doctor, numberOfStars, url) {
+    if (isFindOrChangeTermSite()) {
+        var doctorNameDiv = $(".reserveTable > tbody > tr > td[colspan=3] > div:nth-child(1)");
+        var doctorName = getDoctorName(doctor);
+        for (var i = 0; i < doctorNameDiv.length; i++) {
+            if (doctorNameDiv[i].textContent.trim() === doctorName) {
+                $(doctorNameDiv[i]).append("&nbsp;&nbsp;");
+                var linkAndStars = '<a href="' + url + '" target="_blank" '
+                    + 'title="Przejdź do strony znanylekarz.pl, aby zobaczyć wszystkie opinie.">'
+                    + '<span style="white-space: nowrap;">'
+                    + createStarScaleAsImgElements(numberOfStars) + '</span></a>';
+                $(doctorNameDiv[i]).append(linkAndStars);
+            }
+        }
+    } else if (isVisitsPage()) {
+        var doctorNameDiv = $("#divReservedDynamicContent > div:nth-child(1) > div.description.limit-width > h4");
+        var doctorName = getDoctorName(doctor);
+        for (var i = 0; i < doctorNameDiv.length; i++) {
+            if (doctorNameDiv[i].textContent.trim() === doctorName) {
+                $(doctorNameDiv[i]).append("&nbsp;&nbsp;");
+                var linkAndStars = '<a href="' + url + '" target="_blank" '
+                    + 'title="Przejdź do strony znanylekarz.pl, aby zobaczyć wszystkie opinie.">'
+                    + '<span style="white-space: nowrap;">'
+                    + createStarScaleAsImgElements(numberOfStars) + '</span></a>';
+                $(doctorNameDiv[i]).append(linkAndStars);
+            }
+        }
+    } else if (isStartPage()) {
+        addStarsToStartPageFutureTerms(doctor, numberOfStars, url);
+        addStarsToStartPageExecutedTerms(doctor, numberOfStars, url);
     }
 }
 
@@ -83,16 +131,81 @@ function loadStars(doctors) {
     doctors.forEach(loadDoctor)
 }
 
-var currentUrl = window.location.toString();
-if (currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/Find"
-        || currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/SearchVisitsForChangeTerm") {
-    var doctorNames = $(".reserveTable > tbody > tr > td[colspan=3]:nth-child(2) > div:nth-child(1)");
-    var favour = $(".reserveTable > tbody > tr > td[colspan=3] > div:nth-child(2)");
+function isFindOrChangeTermSite() {
+    var currentUrl = window.location.toString();
+    return currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/Find"
+        || currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/SearchVisitsForChangeTerm";
+}
+
+function isVisitsPage() {
+    var currentUrl = window.location.toString();
+    return currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Visits";
+}
+
+function isStartPage() {
+    var currentUrl = window.location.toString();
+    return currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/"
+}
+
+function startPageFutureTerms() {
+    // #userReservations > div:nth-child(3) > div:nth-child(2) > div.description.limit-width > h4
+    var doctorNames = $("#userReservations > div.content > div.item > div.description.limit-width > h4");
+    var favour = $("#userReservations > div > div > div.description > p:nth-child(2)");
     var doctors = new Set();
     for (var i = 0; i < doctorNames.length; i++) {
-        var doctor = createDoctor(doctorNames[i].textContent.trim(), favour[i].textContent.trim());
+        var doctor = createDoctor(doctorNames[i].textContent.trim(), favour[i].childNodes[0].textContent.trim());
         doctors.add(doctor);
     }
 
     loadStars(doctors);
 }
+
+function startPageExecutedTerms() {
+    // #userReservations > div:nth-child(4) > div:nth-child(2) > div.description > h4
+    var doctorNames = $("#userReservations > div.content > div.item > div.description:not(.limit-width) > h4");
+    var favour = $("#userReservations > div.content.with-padding-top > div.item > div.description ");
+    var doctors = new Set();
+    for (var i = 0; i < doctorNames.length; i++) {
+        var doctor = createDoctor(doctorNames[i].textContent.trim(), favour[i].childNodes[3].textContent.trim());
+        doctors.add(doctor);
+    }
+
+    loadStars(doctors);
+}
+
+function start() {
+    if (isFindOrChangeTermSite()) {
+        var doctorNames = $(".reserveTable > tbody > tr > td[colspan=3]:nth-child(2) > div:nth-child(1)");
+        var favour = $(".reserveTable > tbody > tr > td[colspan=3] > div:nth-child(2)");
+        var doctors = new Set();
+        for (var i = 0; i < doctorNames.length; i++) {
+            var doctor = createDoctor(doctorNames[i].textContent.trim(), favour[i].textContent.trim());
+            doctors.add(doctor);
+        }
+
+        loadStars(doctors);
+    } else if (isVisitsPage()) {
+        //TODO: Split to Future Terms and Executed Terms
+        var doctorNames = $("#divReservedDynamicContent > div > div.description.limit-width > h4");
+        var favour = $("#divReservedDynamicContent > div > div.description.limit-width > p:nth-child(2)");
+        var doctors = new Set();
+        for (var i = 0; i < doctorNames.length; i++) {
+            var doctor = createDoctor(doctorNames[i].textContent.trim(), favour[i].childNodes[0].textContent.trim());
+            doctors.add(doctor);
+        }
+
+        loadStars(doctors);
+    } else if (isStartPage()) {
+        var loadingText = $("#VisitBoxes > div > h4");
+        if (loadingText.length > 0
+                && loadingText[0].textContent.trim() === "Ładowanie treści, proszę czekać") {
+            setTimeout(start, 1000);
+            return;
+        }
+
+        startPageFutureTerms();
+        startPageExecutedTerms();
+    }
+}
+
+start();
