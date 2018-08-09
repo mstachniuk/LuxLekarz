@@ -173,8 +173,34 @@ function startPageExecutedTerms() {
     loadStars(doctors);
 }
 
+function addSecretButton() {
+    var divForButton = $("#advancedResevation > div.column.column3 > div.field.blank");
+    var $input = $('<input type="button" value="Szukaj i rezerwuj" class="button pretty" />'); // style="visibility: hidden"
+    $input.appendTo(divForButton);
+    $input.click(function () {
+        // Greg is awesome
+        setTimeout(function() {
+            var a = document.querySelector("#reserve-term");
+            if (a) {
+                a.click();
+                setTimeout(function() {
+                    alert(42);
+                    tryReserve();
+                    var alarm = new Audio("http://freesound.org/data/previews/397/397096_5675578-lq.mp3");
+                    alarm.loop = true;
+                    alarm.play();
+                }, 10000);
+            } else {
+                document.querySelector("#reservationSearchSubmitButton").click();
+            }
+        }, 10000);
+    });
+    divForButton.addClass("withSubmit");
+}
+
 function start() {
     if (isFindOrChangeTermSite()) {
+        addSecretButton();
         var doctorNames = $(".reserveTable > tbody > tr > td[colspan=3]:nth-child(2) > div:nth-child(1)");
         var favour = $(".reserveTable > tbody > tr > td[colspan=3] > div:nth-child(2)");
         var doctors = new Set();
