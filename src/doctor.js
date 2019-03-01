@@ -1,9 +1,10 @@
 let cache = {};
 
 class Doctor {
-    constructor(nameDiv, service) {
+    constructor(nameDiv, service, city) {
         this.nameDiv = nameDiv;
         this.service = serviceLuxToDocPlanner.get(service);
+        this.city = city;
     }
 
     get name() {
@@ -17,6 +18,7 @@ class Doctor {
     searchParams() {
         let text = "query=";
         text += this.service ? (this.service + " ") : "";
+        text += this.city ? (this.city + " ") : "";
         text += getDoctorNameWithoutTitle(this.name) + "&hitsPerPage=4";
         return text.replace(/ /g, "%20");
     }

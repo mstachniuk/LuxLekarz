@@ -58,9 +58,9 @@ function loadDoctor(doctor) {
     });
 }
 
-function loadStars(doctorNames, favour) {
+function loadStars(doctorNames, favour, city) {
     for (let i = 0; i < doctorNames.length; i++) {
-        let doctor = new Doctor(doctorNames[i], favour[i].textContent.trim());
+        let doctor = new Doctor(doctorNames[i], favour[i].textContent.trim(), city);
         loadDoctor(doctor);
     }
 }
@@ -99,7 +99,8 @@ function start() {
             if (e.target.localName === 'script') {
                 const doctorNames = $(".reserveTable > tbody > tr:not(:first-child) > td[colspan=3]:nth-child(2) > div:nth-child(1)");
                 const favour = $(".reserveTable > tbody > tr:not(:first-child) > td[colspan=3] > div:nth-child(2)");
-                loadStars(doctorNames, favour);
+                const city = $('label[for="CityId"] + div > div > div > span.caption').first().text().trim();
+                loadStars(doctorNames, favour, city);
             }
         });
     } else if (isVisitsPage()) {
