@@ -1,15 +1,49 @@
-// Help fuctions for handling info about doctor in format "title name=service"
+let cache = {};
 
-function createDoctor(name, service) {
-    return name + "=" + service;
+class Doctor {
+    constructor(nameDiv, service, city) {
+        this.nameDiv = nameDiv;
+        this.service = serviceLuxToDocPlanner.get(service);
+        this.city = city;
+    }
+
+    get name() {
+        return this.nameDiv.textContent.trim();
+    }
+
+    /**
+     * Generate string needed by DocPlanner search engine, e.x.: query=chirurg%20STANISZEWSKI%20ANDRZEJ&hitsPerPage=4
+     * string in format: "title name=service"
+     */
+    searchParams() {
+        let text = "query=";
+        text += this.service ? (this.service + " ") : "";
+        text += this.city ? (this.city + " ") : "";
+        text += getDoctorNameWithoutTitle(this.name) + "&hitsPerPage=4";
+        return text.replace(/ /g, "%20");
+    }
+
+    makeRequest() {
+        const params = this.searchParams();
+        const args = {
+            params: params,
+            apiKey: "90a529da12d7e81ae6c1fae029ed6c8f",
+            appID: "docplanner"
+        };
+        if (cache[params] == null) { // if exist on cache
+            cache[params] = $.post("https://docplanner-3.algolia.io/1/indexes/pl_autocomplete_doctor/query",
+                JSON.stringify(args));
+        }
+        return cache[params];
+    }
+
+    addInformation(info) {
+        $(this.nameDiv).append("&nbsp;&nbsp;").append(info);
+    }
 }
 
-function getDoctorName(doctor) {
-    return doctor.substring(0, doctor.indexOf("="));
-}
-
-function getDoctorNameWithoutTitle(doctor) {
-    return getDoctorName(doctor)
+function getDoctorNameWithoutTitle(name) {
+    return name
         .replace("dr n. med. ", "")
         .replace("dr n.med. ", "")
         .replace("dr hab. n. med ", "")
@@ -17,22 +51,7 @@ function getDoctorNameWithoutTitle(doctor) {
         .replace("lek. stom. ", "");
 }
 
-function getDoctorService(doctor) {
-    return doctor.substring(doctor.indexOf("=") + 1, doctor.length);
-}
-
-
-/**
- * Generate string needed by DocPlanner search engine, e.x.: query=chirurg%20STANISZEWSKI%20ANDRZEJ&hitsPerPage=4
- * @param doctor string in format: "title name=service"
- */
-function getSearchParamForDoctor(doctor) {
-    var doctorService = serviceLuxToDocPlanner.get(getDoctorService(doctor));
-    var text = "query=" + doctorService + " " + getDoctorNameWithoutTitle(doctor) + "&hitsPerPage=4";
-    return text.replace(/ /g, "%20");
-}
-
-var serviceLuxToDocPlanner = new Map();
+let serviceLuxToDocPlanner = new Map();
 serviceLuxToDocPlanner.set("Konsultacja alergologa", "alergolog");
 serviceLuxToDocPlanner.set("Konsultacja chirurga dzieci", "chirurg");
 serviceLuxToDocPlanner.set("Konsultacja chirurga ogólnego", "chirurg");
