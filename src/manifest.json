@@ -20,15 +20,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": ["https://portalpacjenta.luxmed.pl/*"],
       "js": ["jquery-3.1.1.min.js", "doctor.js", "myscript.js"]
     }
   ],
   "permissions": [
-    "activeTab",
-    "tabs",
-    "http://*/*",
-    "https://*/*"
+    "https://portalpacjenta.luxmed.pl/*"
   ],
   "web_accessible_resources": ["star-gold-left-10.png", "star-gold-right-10.png", "star-gray-left-10.png",
     "star-gray-right-10.png"]

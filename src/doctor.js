@@ -11,6 +11,24 @@ class Doctor {
         return this.nameDiv.textContent.trim();
     }
 
+    load() {
+        if (!this.name) // ignore when empty name
+            return;
+        this.makeRequest().done(data => {
+            if (data.hits.length > 0) {
+                const numberOfStars = parseFloat(data.hits[0].stars);
+                const url = data.hits[0].url.replace("http://", "https://");
+                console.log("Odczytano " + numberOfStars + " gwiazdki dla: " + this.name);
+                this.addInformation(generateInformation(numberOfStars, url,
+                    'Przejdź do strony znanylekarz.pl, aby zobaczyć wszystkie opinie.'));
+            } else {
+                console.log("Nie znaleziono strony dla: " + this.name);
+                this.addInformation(generateInformation(0, 'https://www.znanylekarz.pl/',
+                    'Brak strony o danym lekarzu w serwisie znanylekarz.pl Kliknij, aby przejść do tej strony i spróbuj wyszukać lekarza ręcznie.'));
+            }
+        });
+    }
+
     /**
      * Generate string needed by DocPlanner search engine, e.x.: query=chirurg%20STANISZEWSKI%20ANDRZEJ&hitsPerPage=4
      * string in format: "title name=service"
@@ -38,7 +56,15 @@ class Doctor {
     }
 
     addInformation(info) {
-        $(this.nameDiv).append("&nbsp;&nbsp;").append(info);
+        const msg = "&nbsp;&nbsp;" + info;
+        switch (this.nameDiv.nodeType) {
+            case Node.ELEMENT_NODE:
+                $(this.nameDiv).append(msg);
+                break;
+            case Node.TEXT_NODE:
+                $(this.nameDiv).after(msg);
+                break;
+        }
     }
 }
 
