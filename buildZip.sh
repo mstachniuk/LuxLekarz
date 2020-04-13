@@ -1,3 +1,4 @@
 #!/bin/sh
 
-zip -j -r LuxLekarz.zip src/*
+./buildOut.sh
+zip -j -r LuxLekarz.zip out/LuxLekarz/*
