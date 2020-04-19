@@ -16,7 +16,7 @@ function createStarScaleAsImgElements(numberOfStars) {
 }
 
 function generateInformation(noStars, url, title) {
-    return `<a href="${url}" target="_blank" title="${title}">
+    return `<a href="${url}" target="_blank" title="${title}" onMouseOver="this.style.color='#FFFFFF'"">
         <span style="white-space: nowrap;">${createStarScaleAsImgElements(noStars)}</span>
         </a>`;
 }
@@ -93,6 +93,11 @@ serviceLuxToDocPlanner.set("Umówienie wizyty u chirurga stomatologa", "stomatol
 serviceLuxToDocPlanner.set("Umówienie wizyty u stomatologa", "stomatolog");
 serviceLuxToDocPlanner.set("Umówienie wizyty u stomatologa dziecięcego", "stomatolog dziecięcy");
 
+function isLuxMedPage() {
+    const currentUrl = window.location.toString();
+    return currentUrl.startsWith("https://portalpacjenta.luxmed.pl/PatientPortal/");
+}
+
 function isFindOrChangeTermSite() {
     const currentUrl = window.location.toString();
     return currentUrl === "https://portalpacjenta.luxmed.pl/PatientPortal/Reservations/Reservation/Search"
@@ -143,24 +148,28 @@ function reservationPageTerms() {
 }
 
 function start() {
-    if (isFindOrChangeTermSite()) {
-        $('#foundTermsDiv').bind('DOMSubtreeModified', function (e) {
-            if (e.target.localName === 'script') {
-                reservationPageTerms();
+    if (isLuxMedPage()) {
+        if (isFindOrChangeTermSite()) {
+            $('#foundTermsDiv').bind('DOMSubtreeModified', function (e) {
+                if (e.target.localName === 'script') {
+                    reservationPageTerms();
+                }
+            });
+        } else if (isVisitsPage()) {
+            visitPageFutureTerms();
+            visitPageExecutedTerms();
+        } else if (isStartPage()) {
+            const loadingText = $("#VisitBoxes > div > span").text().trim();
+            if (loadingText === "Ładowanie treści, proszę czekać") {
+                setTimeout(start, 1000);
+                return;
             }
-        });
-    } else if (isVisitsPage()) {
-        visitPageFutureTerms();
-        visitPageExecutedTerms();
-    } else if (isStartPage()) {
-        const loadingText = $("#VisitBoxes > div > span").text().trim();
-        if (loadingText === "Ładowanie treści, proszę czekać") {
-            setTimeout(start, 1000);
-            return;
-        }
 
-        startPageFutureTerms();
-        startPageExecutedTerms();
+            startPageFutureTerms();
+            startPageExecutedTerms();
+        }
+    } else if (isHereHealth()) {
+        handleHereHealth();
     }
 }
 
