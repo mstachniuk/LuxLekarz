@@ -15,23 +15,33 @@ function createStarScaleAsImgElements(numberOfStars) {
     return text;
 }
 
-function generateInformation(noStars, url, title) {
-    return `<a href="${url}" target="_blank" title="${title}" onMouseOver="this.style.color='#FFFFFF'"">
+function generateInformation(noStars, opinionCount, url, title) {
+    return `<a href="${url}" target="_blank" class="stars" title="${title}" onMouseOver="this.style.color='#FFFFFF'"">
         <span style="white-space: nowrap;">${createStarScaleAsImgElements(noStars)}</span>
+        <span style="color: black;font-size: small;">(${opinionCount})</span>
         </a>`;
 }
 
 function loadStars(doctorNames, favour, city) {
+
     for (let i = 0; i < doctorNames.length; i++) {
-        let service = serviceLuxToDocPlanner.get(favour[i].textContent.trim());
+        NUMBER_OF_MODIFICATIONS_PENDING++
+        let service
+
+        if (!!favour && !!favour[i]) {
+            service = serviceLuxToDocPlanner.get(favour[i].textContent.trim());
+        }
+
         let doctor = new Doctor(doctorNames[i].textContent.trim(), service, city);
         doctor.load(addInformationToDiv(doctorNames[i]));
     }
 }
 
 function addInformationToDiv(nameDiv) {
-    return function (numberOfStars, url, title) {
-        addInformation(nameDiv, generateInformation(numberOfStars, url, title));
+    return function (numberOfStars, opinionCount, url, title) {
+        NUMBER_OF_MODIFICATIONS_PENDING--
+        if (!!nameDiv.querySelector('a.stars')) { return }
+        addInformation(nameDiv, generateInformation(numberOfStars, opinionCount, url, title));
     }
 }
 
@@ -147,8 +157,39 @@ function reservationPageTerms() {
     loadStars(doctorNames, favour, city);
 }
 
+
+function loadDoctorsRatingsForNewPortal(retryNumber) {
+    const doctorNames = $(NEW_LUXMED_PORTAL_DOCTOR_SELECTOR);
+
+    if (!Array.from(doctorNames).some(nameElement => nameElement.textContent.length > 0) && retryNumber < 10) {
+        setTimeout(loadDoctorsRatingsForNewPortal, 700, retryNumber + 1);
+        return;
+    }
+
+    loadStars(doctorNames, null, null);
+}
+
+function setupObserverForNewPortal() {
+
+    function check(changes, observer) {
+
+        if ($(NEW_LUXMED_PORTAL_DOCTOR_SELECTOR).length > 0 && NUMBER_OF_MODIFICATIONS_PENDING === 0){
+            loadDoctorsRatingsForNewPortal(0)
+        }
+    }
+
+    const observer = new MutationObserver(check);
+
+    observer.observe(document, {childList: true, subtree: true})
+
+    return observer;
+}
+
 function start() {
     if (isLuxMedPage()) {
+
+        setupObserverForNewPortal()
+
         if (isFindOrChangeTermSite()) {
             $('#foundTermsDiv').bind('DOMSubtreeModified', function (e) {
                 if (e.target.localName === 'script') {
@@ -172,5 +213,8 @@ function start() {
         handleHereHealth();
     }
 }
+
+let NUMBER_OF_MODIFICATIONS_PENDING = 0
+const NEW_LUXMED_PORTAL_DOCTOR_SELECTOR = '.doctor:not(:has(a)),.dropdown-list-group-item >> .form-check-label > span:not(:has(a))'
 
 start();

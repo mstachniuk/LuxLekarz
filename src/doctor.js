@@ -13,13 +13,14 @@ class Doctor {
         this.makeRequest().done(data => {
             if (data.hits.length > 0) {
                 const numberOfStars = parseFloat(data.hits[0].stars);
+                const opinionCount = parseFloat(data.hits[0].opinionCount)
                 const url = data.hits[0].url.replace("http://", "https://");
-                console.log("Odczytano " + numberOfStars + " gwiazdki dla: " + this.name);
-                onSuccessCallback(numberOfStars, url,
+                console.debug("Odczytano " + numberOfStars + " gwiazdki dla: " + this.name);
+                onSuccessCallback(numberOfStars, opinionCount, url,
                     'Przejdź do strony znanylekarz.pl, aby zobaczyć wszystkie opinie.');
             } else {
-                console.log("Nie znaleziono strony dla: " + this.name);
-                onSuccessCallback(0, 'https://www.znanylekarz.pl/',
+                console.debug("Nie znaleziono strony dla: " + this.name);
+                onSuccessCallback(0, 0,  'https://www.znanylekarz.pl/',
                     'Brak strony o danym lekarzu w serwisie znanylekarz.pl Kliknij, aby przejść do ' +
                     'tej strony i spróbuj wyszukać lekarza ręcznie.');
             }
