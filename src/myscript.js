@@ -1,7 +1,7 @@
 function createStarScaleAsImgElements(numberOfStars) {
     function getImage(index, gold) {
         const name = `star-${gold ? 'gold' : 'gray'}-${index % 2 === 0 ? 'left' : 'right'}-10.png`;
-        return chrome.extension.getURL(name)
+        return chrome.runtime.getURL(name);
     }
 
     let text = "";
